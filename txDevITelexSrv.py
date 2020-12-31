@@ -108,9 +108,13 @@ class TelexITelexSrv(txDevITelexCommon.TelexITelexCommon):
 
     def read(self) -> str:
         if self._rx_buffer:
-            if ST.DISCON < self._connected <= ST.CON_TP_RUN:
-                # Welcome banner hasn't been sent yet. Pop only non-printable
-                # items.
+            if ST.DISCON < self._connected <= ST.CON_TP_RUN or self._acknowledge_counter < 0:
+                # Welcome banner hasn't been sent yet, and is also not fully
+                # printed. Pop only non-printable items.
+                #
+                # NB: ESC-WELCOME may be redundant ever since we check the
+                # banner to be fully printed out using the acknowledge counter.
+                # In the future, it may suffice to only check the latter.
                 for nr, item in enumerate(self._rx_buffer):
                     if item.startswith('\x1b'):
                         return self._rx_buffer.pop(nr)

@@ -196,7 +196,7 @@ class TelexCH340TTY(txBase.TelexBase):
                         # WRU received: lock sending until after 21 character's
                         # time has passed. This may need to be raised due to
                         # the CH340's substantial write buffer.
-                        self._time_tx_lock = time.monotonic() + 7.5*21/50
+                        self._time_tx_lock = time.monotonic() + 7.5*21/self._baudrate
 
                 aa = ''.join(aa)
                 self._tx_buffer = []

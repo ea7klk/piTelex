@@ -108,18 +108,28 @@ class TelexITelexSrv(txDevITelexCommon.TelexITelexCommon):
 
     def read(self) -> str:
         if self._rx_buffer:
-            if ST.DISCON < self._connected <= ST.CON_TP_RUN or self._acknowledge_counter < 0:
-                # Welcome banner hasn't been sent yet, and is also not fully
-                # printed. Pop only non-printable items.
+            if self._connected <= ST.DISCON or (ST.DISCON >= ST.CON_FULL and self._acknowledge_counter >= 0):
+                # Only output all data (including printable) if
+                # - we're disconnected or
+                # - we're fully connected (welcome banner has been enqueued)
+                #   and _acknowledge_counter has reached 0 (i.e., welcome banner
+                #   has in fact been printed)
                 #
-                # NB: ESC-WELCOME may be redundant ever since we check the
-                # banner to be fully printed out using the acknowledge counter.
-                # In the future, it may suffice to only check the latter.
+                # Otherwise, pop only non-printable items to avoid that
+                # received data slip in between the welcome banner characters.
+                # (With some services, this may happen with WRUs, leading to
+                # formidable mayhem on the teleprinter.)
+                #
+                # NB: ESC-WELCOME (i.e., the condition to advance from
+                # CON_TP_RUN to CON_FULL) may be redundant ever since we check
+                # the banner to be fully printed out using the acknowledge
+                # counter. In the future, it may suffice to only check the
+                # latter.
+                return self._rx_buffer.pop(0)
+            else:
                 for nr, item in enumerate(self._rx_buffer):
                     if item.startswith('\x1b'):
                         return self._rx_buffer.pop(nr)
-            else:
-                return self._rx_buffer.pop(0)
 
 
     def write(self, a:str, source:str):

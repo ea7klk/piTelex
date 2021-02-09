@@ -108,7 +108,7 @@ class TelexITelexSrv(txDevITelexCommon.TelexITelexCommon):
 
     def read(self) -> str:
         if self._rx_buffer:
-            if self._connected <= ST.DISCON or (ST.DISCON >= ST.CON_FULL and self._acknowledge_counter >= 0):
+            if self._connected <= ST.DISCON or (self._connected >= ST.CON_FULL and self._acknowledge_counter >= 0):
                 # Only output all data (including printable) if
                 # - we're disconnected or
                 # - we're fully connected (welcome banner has been enqueued)

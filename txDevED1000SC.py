@@ -354,7 +354,7 @@ class TelexED1000SC(txBase.TelexBase):
 
             # Read audio input
             bdata = stream.read(FpS, exception_on_overflow=False)   # blocking
-            data = np.frombuffer(bdata, dtype=np.int16)
+            data = np.frombuffer(bdata, dtype=np.int8)
 
             # Run FSK demodulation (bit detection)
             bit = self._recv_decode(data)
@@ -605,6 +605,10 @@ class TelexED1000SC(txBase.TelexBase):
                         analog=False, ftype='butter', fs=sample_f, output='sos')
             self._filters.append(filter_bp)
 
+        self._filters_tf = []
+        for sos in self._filters:
+            self._filters_tf.append(signal.sos2tf(sos))
+
         if not plot_spectrum:
             return
 
@@ -633,7 +637,7 @@ class TelexED1000SC(txBase.TelexBase):
     def _recv_decode(self, data):
         val = [None, None]
         for i in range(2):
-            fdata = signal.sosfilt(self._filters[i], data)
+            fdata = signal.lfilter(*self._filters_tf[i], data)
             fdata = np.abs(fdata)   # rectifier - instead of envelope curve
             val[i] = int(np.average(fdata))   # get energy for each frequency band
 

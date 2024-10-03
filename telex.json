@@ -50,7 +50,7 @@
     # and show status with LEDs
     "RPiCtrl": {
       "type": "RPiCtrl",
-      "enable": true,
+      "enable": false,
 
       # separate number switch - see also module RPiTTY
       "pin_number_switch": 0,
@@ -126,9 +126,9 @@
 
   ###########################################################################
 
-  "wru_id": "12345 dummy d",
-  "wru_replace_always": false,
+  "wru_id": "61578 volker e",
+  "wru_replace_always": true,
   "dial_timeout": 0,
-  "continue_with_no_printer": false,
+  "continue_with_no_printer": true,
   "errorlog_path": "./errorlog/"
 }

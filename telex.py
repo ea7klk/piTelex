@@ -20,10 +20,6 @@ l = logging.getLogger("piTelex." + __name__)
 import logging.handlers
 import traceback
 
-#import log
-#def LOG(text:str, level:int=3):
-#    log.LOG('\033[0;30;47m '+text+' \033[0m', level)
-
 #######
 # global variables
 
@@ -190,11 +186,6 @@ def init():
             ctrl = txDevRPiCtrl.TelexRPiCtrl(**dev_param)
             DEVICES.append(ctrl)
 
-        #elif dev_param['type'] == 'telnet':
-        #    import txDevTelnetSrv
-        #    srv = txDevTelnetSrv.TelexTelnetSrv(**dev_param)
-        #    DEVICES.append(srv)
-
         elif dev_param['type'] == 'i-Telex':
             import txDevITelexClient
             srv = txDevITelexClient.TelexITelexClient(**dev_param)
@@ -259,6 +250,11 @@ def init():
             import txDevKeyPad
             keypad = txDevKeyPad.TelexKeyPad(**dev_param)
             DEVICES.append(keypad)
+
+        elif dev_param['type'] == 'LinuxCmd':
+            import txDevLinuxCmd
+            linuxcmd = txDevLinuxCmd.TelexLinuxCmd(**dev_param)
+            DEVICES.append(linuxcmd)
 
         else:
             l.warning("Unknown module type in configuration, section {!r}: {!r}".format(dev_name, dev_param['type']))
@@ -416,4 +412,3 @@ def test():
 
 if __name__== "__main__":
     main()
-
